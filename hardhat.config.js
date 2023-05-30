@@ -1,6 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-gas-reporter");
-require("solidity-coverage");
 require('dotenv').config({path:__dirname+'/.env'})
 const { API_URL, PRIVATE_KEY, REPORT_GAS } = process.env;
 
@@ -16,12 +15,12 @@ module.exports = {
     }
   },
   networks: {
-    // goerli: {
-    //   url: API_URL,
-    //   accounts: [
-    //     PRIVATE_KEY,
-    //   ],
-    // },
+    goerli: {
+      url: API_URL,
+      accounts: [
+        PRIVATE_KEY
+      ]
+    }
   },
   gasReporter: {
     enabled: !!(REPORT_GAS)

@@ -4,7 +4,7 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Factory = await ethers.getContractFactory("MyContract");
+  const Factory = await ethers.getContractFactory("PoppAccessCard");
   const Contract = await Factory.deploy();
   console.log("Contract address:", Contract.address);
 }

@@ -1,6 +1,5 @@
-# hardhat-template
-A template repo for hardhat projects. Includes configurations, dependencies and tests.
-After cloning this repo: 
+# Employee Access Card
+An ERC1155 contract that grants token gate access to employees of verified POPP employers.
 1. run
 ```
 npm install
