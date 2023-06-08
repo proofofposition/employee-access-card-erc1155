@@ -1,0 +1,16 @@
+{
+  "name": "Ringier Access CArd",
+  "image": "https://ipfs.io/ipfs/QmXVPmiW6uq6c9XDKkFeQjU6KVjCq4wi5zksaE5WwSwbAX?filename=DALL%C2%B7E%202023-05-16%2021.10.17%20-%20A%20photo%20of%20a%20llama%20in%20a%20suit%20standing%20in%20a%20purple%20room.png",
+  "employer": "Ringier",
+  "attributes": [
+    {
+      "display_type": "date",
+      "trait_type": "start date",
+      "value": 1546360800
+    },
+    {
+      "trait_type": "Employer",
+      "value": "Ringier"
+    }
+  ]
+}
