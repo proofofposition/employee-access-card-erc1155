@@ -23,12 +23,10 @@ IAccessCardSft
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
-    IEmployerSft private employerSft;
 
 
-    constructor (address _employerSftAddress) ERC1155("https://ipfs.io/ipfs/") {
-        _setBaseURI("https://ipfs.io/ipfs/");
-        employerSft = IEmployerSft(_employerSftAddress);
+    constructor () ERC1155("ipfs://") {
+        _setBaseURI("ipfs://");
     }
 
     /**
@@ -68,19 +66,6 @@ IAccessCardSft
     }
 
     /**
-    * @dev Mint a pre-verified employer token and transfer to a new wallet
-     * we allow access card owners to add to their employer
-     *
-     * @return uint256 representing the newly minted token id
-     */
-    function addToMyEmployer(address _to) external returns (uint256) {
-        uint256 _employerId = employerSft.employerIdFromWallet(msg.sender);
-        require(_employerId != 0, "You need to be a POPP verified employer to do this.");
-
-        return _addToEmployer(_to, _employerId);
-    }
-
-    /**
     * @dev Mint a new token and add to a employer
      * this is an internal function that is called by `mintNewAccessCard` and `addToEmployer`
      * 1. Mint the token
@@ -109,18 +94,6 @@ IAccessCardSft
 
     /**
      * @dev remove a wallet from a employer
-     * This can only be done by a employer member.
-     * note: A wallet can remove itself from a employer
-     */
-    function removeFromMyEmployer(address _from) public {
-        uint256 _employerId = employerSft.employerIdFromWallet(msg.sender);
-        require(_employerId != 0, "You need to register your employer");
-
-        super._burn(_from, _employerId, 1);
-    }
-
-    /**
-     * @dev remove a wallet from a employer
      * This can only be done by an admin user
      */
     function removeFromEmployer(
@@ -133,6 +106,10 @@ IAccessCardSft
     // The following functions are overrides required by Solidity.
     function uri(uint256 tokenId) public view virtual override(ERC1155, ERC1155URIStorage)  returns (string memory) {
         return super.uri(tokenId);
+    }
+
+    function selfDestruct() public onlyOwner {
+        selfdestruct(payable(owner()));
     }
 
     /**

@@ -23,10 +23,8 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
     describe("Popp Employee Access", function () {
         beforeEach(async function () {
             const PoppAccessCard = await ethers.getContractFactory("PoppAccessCard");
-            const EmployerSftMockFactory = await ethers.getContractFactory("EmployerSftMock");
-            this.employerSft = await EmployerSftMockFactory.deploy();
 
-            myContract = await PoppAccessCard.deploy(this.employerSft.address);
+            myContract = await PoppAccessCard.deploy();
 
             [owner, alice, bob, connie] = await ethers.getSigners();
             const balance0ETH = await ethers.provider.getBalance(myContract.address);
@@ -50,7 +48,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
 
             // check token uri
             let uri = await myContract.uri(tokenId);
-            expect(uri).to.be.equal("https://ipfs.io/ipfs/TOKEN_URI");
+            expect(uri).to.be.equal("ipfs://TOKEN_URI");
 
             await expect(
                 myContract
@@ -81,57 +79,6 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
                     myContract
                         .connect(bob)
                         .addEmployee(connie.address, 1)
-                ).to.be.revertedWith("Ownable: caller is not the owner");
-            });
-        });
-
-        describe("addToMyEmployer()", function () {
-            it("Should be able to add a wallet to my employer", async function () {
-                await this.employerSft.setEmployerId(1);
-                // add a new wallet
-                let mintResult = await myContract
-                    .connect(alice)
-                    .addToMyEmployer(connie.address);
-                // check uri is the same for the new wallet token
-                let txResult = await mintResult.wait(1);
-                let _tokenId = txResult.events[0].args.id.toString();
-                expect(_tokenId).to.be.equal("1");
-            });
-
-            it("Should fail if user tries to add to a non-existent employer", async function () {
-                // add a new wallet
-                await expect(
-                    myContract
-                        .connect(bob)
-                        .addToMyEmployer(connie.address)
-                ).to.be.revertedWith("You need to be a POPP verified employer to do this.");
-            });
-
-            it("Should be able to remove from employer (admin)", async function () {
-                await myContract
-                    .connect(owner)
-                    .removeFromEmployer(alice.address, tokenId)
-
-                let balance = await myContract.balanceOf(alice.address, tokenId);
-                expect(balance.toBigInt()).to.be.equal(0);
-            });
-
-            it("Should be able to remove from employer (employer member)", async function () {
-                await this.employerSft.setEmployerId(1);
-                await myContract
-                    .connect(alice)
-                    .removeFromMyEmployer(alice.address)
-
-                let balance = await myContract.balanceOf(alice.address, tokenId);
-                expect(balance.toBigInt()).to.be.equal(0);
-            });
-
-            it("Should fail if user tries to remove from a employer that you don't belong to", async function () {
-                // add a new wallet
-                await expect(
-                    myContract
-                        .connect(bob)
-                        .removeFromEmployer(alice.address, tokenId)
                 ).to.be.revertedWith("Ownable: caller is not the owner");
             });
         });

@@ -1,0 +1,16 @@
+{
+  "name": "Ringier Access Card",
+  "image": "ipfs://QmPrXrsr8fD2mQMariYnWvvYFrf7x1DXj622WPSsC74DhL",
+  "employer": "Ringier",
+  "attributes": [
+    {
+      "display_type": "date",
+      "trait_type": "start date",
+      "value": 1546360800
+    },
+    {
+      "trait_type": "Employer",
+      "value": "Ringier"
+    }
+  ]
+}
