@@ -20,14 +20,16 @@
     "@gnosis.pm/mock-contract": "^4.0.0",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+    "@openzeppelin/hardhat-upgrades": "^1.27.0",
     "chai": "^4.3.6",
     "hardhat": "^2.10.1",
     "hardhat-gas-reporter": "^1.0.9"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3",
+    "@openzeppelin/contracts-upgradeable": "*",
     "dotenv": "^16.0.2",
     "hardhat-tracer": "^1.1.0-rc.6",
-    "popp-interfaces": "^1.1.1"
+    "popp-interfaces": "^2.0"
   }
 }

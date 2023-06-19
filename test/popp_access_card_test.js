@@ -22,11 +22,12 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
 
     describe("Popp Employee Access", function () {
         beforeEach(async function () {
-            const PoppAccessCard = await ethers.getContractFactory("PoppAccessCard");
+            // deploy employer badge mock
             const EmployerSftMockFactory = await ethers.getContractFactory("EmployerSftMock");
-            this.employerSft = await EmployerSftMockFactory.deploy();
-
-            myContract = await PoppAccessCard.deploy(this.employerSft.address);
+            this.employerSft = await upgrades.deployProxy(EmployerSftMockFactory)
+            // deploy contract under test
+            const PoppAccessCard = await ethers.getContractFactory("PoppAccessCard");
+            myContract = await upgrades.deployProxy(PoppAccessCard, [this.employerSft.address]);
 
             [owner, alice, bob, connie] = await ethers.getSigners();
             const balance0ETH = await ethers.provider.getBalance(myContract.address);
@@ -50,7 +51,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
 
             // check token uri
             let uri = await myContract.uri(tokenId);
-            expect(uri).to.be.equal("https://ipfs.io/ipfs/TOKEN_URI");
+            expect(uri).to.be.equal("ipfs://TOKEN_URI");
 
             await expect(
                 myContract

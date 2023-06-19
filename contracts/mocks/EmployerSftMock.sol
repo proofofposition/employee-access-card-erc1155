@@ -4,13 +4,12 @@ pragma solidity 0.8.17;
 import "popp-interfaces/IEmployerSft.sol";
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 
 contract EmployerSftMock is
-ERC1155,
+ERC1155Upgradeable,
 IEmployerSft {
     uint32 public employerId;
-
-    constructor() ERC1155("https://test.com/{id}.json") {}
 
     function setEmployerId(uint32 _employerId) external {
         employerId = _employerId;
