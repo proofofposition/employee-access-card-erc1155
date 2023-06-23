@@ -118,7 +118,7 @@ UUPSUpgradeable
      * This can only be done by a employer member.
      * note: A wallet can remove itself from a employer
      */
-    function removeFromMyEmployer(address _from) public {
+    function removeFromMyEmployer(address _from) external {
         uint256 _employerId = employerSft.employerIdFromWallet(msg.sender);
         require(_employerId != 0, "You need to register your employer");
 
