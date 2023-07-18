@@ -62,7 +62,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
             // test non-transferable
             await expect(
                 myContract.safeTransferFrom(owner.address, alice.address, 1, 1, "0x")
-            ).to.be.revertedWith("Employee Access Cards are non-transferable");
+            ).to.be.revertedWithCustomError(myContract, 'NonTransferable');
         });
 
         describe("addEmployee()", function () {
@@ -105,7 +105,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
                     myContract
                         .connect(bob)
                         .addToMyEmployer(connie.address)
-                ).to.be.revertedWith("You need to be a POPP verified employer to do this.");
+                ).to.be.revertedWithCustomError(myContract, 'MissingEmployerBadge');
             });
 
             it("Should be able to remove from employer (admin)", async function () {

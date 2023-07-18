@@ -11,11 +11,17 @@ import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
 import "popp-interfaces/IAccessCardSft.sol";
 import "popp-interfaces/IEmployerSft.sol";
 
-// Desired Features
-// - Mint a new employee access card (admin only)
-// - Add a wallet to an employer (admin only)
-// - Burn Tokens (admin only?)
-// - ERC1155 full interface (base, metadata, enumerable)
+/**
+ * @title PoppAccessCard
+ * @notice This contract represents an employee access card.
+ It is minted by an employer and assigned to an employee as Proof of their Position in the Organization.
+ * @dev This contract is an ERC721 token that is minted by an admin or verified POPP employer and assigned to a new employee.
+ * Desired Features
+ * - Mint a new employee access card (admin only)
+ * - Add a wallet to an employer (admin only)
+ * - Burn Tokens (admin only?)
+ * - ERC1155 full interface (base, metadata, enumerable)
+*/
 contract PoppAccessCard is
 ERC1155Upgradeable,
 ERC1155URIStorageUpgradeable,
@@ -23,10 +29,23 @@ OwnableUpgradeable,
 IAccessCardSft,
 UUPSUpgradeable
 {
+    //////////////
+    // Errors  //
+    ////////////
+    error MissingEmployerBadge();
+    error NonTransferable();
+    //////////////
+    // Types   //
+    ////////////
     using CountersUpgradeable for CountersUpgradeable.Counter;
-
+    //////////////////////
+    // State Variables //
+    ////////////////////
     CountersUpgradeable.Counter private _tokenIdCounter;
     IEmployerSft private employerSft;
+    /////////////
+    // Events //
+    ///////////
 
     function initialize(address _employerSftAddress) initializer public {
         __ERC1155_init("ipfs://");
@@ -81,8 +100,9 @@ UUPSUpgradeable
      */
     function addToMyEmployer(address _to) external returns (uint256) {
         uint256 _employerId = employerSft.employerIdFromWallet(msg.sender);
-        require(_employerId != 0, "You need to be a POPP verified employer to do this.");
-
+        if (_employerId == 0) {
+            revert MissingEmployerBadge();
+        }
         return _addToEmployer(_to, _employerId);
     }
 
@@ -152,7 +172,9 @@ UUPSUpgradeable
         uint256[] memory,
         bytes memory
     ) internal virtual override(ERC1155Upgradeable) {
-        require(from == address(0) || to == address(0), "Employee Access Cards are non-transferable");
+        if (from != address(0) && to != address(0)) {
+            revert NonTransferable();
+        }
     }
 
     function _authorizeUpgrade(address newImplementation)
