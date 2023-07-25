@@ -5,7 +5,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
 import "popp-interfaces/IAccessCardSft.sol";
@@ -34,14 +33,10 @@ UUPSUpgradeable
     ////////////
     error MissingEmployerBadge();
     error NonTransferable();
-    //////////////
-    // Types   //
-    ////////////
-    using CountersUpgradeable for CountersUpgradeable.Counter;
     //////////////////////
     // State Variables //
     ////////////////////
-    CountersUpgradeable.Counter private _tokenIdCounter;
+    uint256 private _tokenIdCounter;
     IEmployerSft private employerSft;
     /////////////
     // Events //
@@ -127,10 +122,8 @@ UUPSUpgradeable
      * @return uint256 representing the newly minted token id
      */
     function _mintToken(address _to) internal returns (uint256) {
-        _tokenIdCounter.increment();
-        uint256 _tokenId = _tokenIdCounter.current();
-
-        return _addToEmployer(_to, _tokenId);
+        _tokenIdCounter++;
+        return _addToEmployer(_to, _tokenIdCounter);
     }
 
     /**
