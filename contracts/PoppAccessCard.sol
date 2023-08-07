@@ -41,6 +41,12 @@ UUPSUpgradeable
     /////////////
     // Events //
     ///////////
+    event NewAccessCardMinted(uint256 _tokenId, address _to, string _tokenURI);
+    event UriSet(uint256 _tokenId, string _tokenURI);
+    event BaseUriSet(string _baseUri);
+    event WalletAddedToTeam(address _wallet, uint256 _tokenId);
+    event WalletRemovedFromTeam(address _wallet, uint256 _tokenId);
+    event TokenBurned(uint256 _tokenId);
 
     function initialize(address _employerSftAddress) initializer public {
         __ERC1155_init("ipfs://");
@@ -59,22 +65,9 @@ UUPSUpgradeable
     function mintNewAccessCard(address _to, string memory _tokenURI) external onlyOwner returns (uint256) {
         uint256 _tokenId = _mintToken(_to);
         _setURI(_tokenId, _tokenURI);
+        emit NewAccessCardMinted(_tokenId, _to, _tokenURI);
 
         return _tokenId;
-    }
-
-    /**
-     * @dev Sets `tokenURI` as the tokenURI of `tokenId`.
-     */
-    function setURI(uint256 tokenId, string memory tokenURI) external onlyOwner {
-        _setURI(tokenId, tokenURI);
-    }
-
-    /**
-    * @dev Sets `baseURI` as the `_baseURI` for all tokens
-     */
-    function setBaseURI(string memory baseURI) external onlyOwner {
-        _setBaseURI(baseURI);
     }
 
     /**
@@ -110,6 +103,7 @@ UUPSUpgradeable
      */
     function _addToEmployer(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
+        emit WalletAddedToTeam(_to, _tokenId);
 
         return _tokenId;
     }
@@ -134,6 +128,7 @@ UUPSUpgradeable
     function removeFromMyEmployer(address _from) external {
         uint256 _employerId = employerSft.employerIdFromWallet(msg.sender);
         require(_employerId != 0, "You need to register your employer");
+        emit WalletRemovedFromTeam(_from, _employerId);
 
         super._burn(_from, _employerId, 1);
     }
@@ -146,8 +141,25 @@ UUPSUpgradeable
         address _from,
         uint256 _id
     ) public onlyOwner {
+        emit WalletRemovedFromTeam(_from, _id);
         super._burn(_from, _id, 1);
     }
+
+    /**
+   * @dev Sets `tokenURI` as the tokenURI of `tokenId`.
+     */
+    function setURI(uint256 tokenId, string memory tokenURI) external onlyOwner {
+        _setURI(tokenId, tokenURI);
+        emit UriSet(tokenId, tokenURI);
+    }
+
+    /**
+    * @dev Sets `baseURI` as the `_baseURI` for all tokens
+     */
+    function setBaseURI(string memory baseURI) external onlyOwner {
+        _setBaseURI(baseURI);
+    }
+
 
     // The following functions are overrides required by Solidity.
     function uri(uint256 tokenId) public view virtual override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)  returns (string memory) {
