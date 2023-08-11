@@ -8,18 +8,18 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 contract EmployerSftMock is
 ERC1155Upgradeable,
 IEmployerSft {
-    uint32 public employerId;
+    string public employerKey;
 
-    function setEmployerId(uint32 _employerId) external {
-        employerId = _employerId;
+    function setEmployerKey(string memory _employerKey) external {
+        employerKey = _employerKey;
     }
 
-    function employerIdFromWallet(address) external view returns (uint32) {
-        return employerId;
+    function employerKeyFromWallet(address _address) external view returns (string memory) {
+        return employerKey;
     }
 
     function addToMyTeam(address) view external returns (uint256) {
-        return employerId;
+        return 1;
     }
 
     function removeFromMyTeam(address, uint32) pure external {

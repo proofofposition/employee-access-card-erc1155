@@ -30,6 +30,6 @@
     "@openzeppelin/contracts-upgradeable": "*",
     "dotenv": "^16.0.2",
     "hardhat-tracer": "^1.1.0-rc.6",
-    "popp-interfaces": "^2.1"
+    "popp-interfaces": "^2.4.4"
   }
 }

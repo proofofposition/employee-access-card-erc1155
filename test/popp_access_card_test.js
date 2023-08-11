@@ -36,7 +36,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
             // mint employer verification
             let mintResult = await myContract
                 .connect(owner)
-                .mintNewAccessCard(alice.address, "TOKEN_URI");
+                .mintNewAccessCard(alice.address, "TOKEN_URI", 'hooli');
 
             let batch = await myContract.balanceOfBatch([alice.address], [1])
             expect(batch.toString()).to.equal('1');
@@ -56,7 +56,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
             await expect(
                 myContract
                     .connect(bob)
-                    .mintNewAccessCard(bob.address, "TOKEN_URI")
+                    .mintNewAccessCard(bob.address, "TOKEN_URI", 'hoooli')
             ).to.be.revertedWith("Ownable: caller is not the owner");
 
             // test non-transferable
@@ -88,14 +88,14 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
 
         describe("addToMyEmployer()", function () {
             it("Should be able to add a wallet to my employer", async function () {
-                await this.employerSft.setEmployerId(1);
+                await this.employerSft.setEmployerKey('hooli');
                 // add a new wallet
                 let mintResult = await myContract
                     .connect(alice)
                     .addToMyEmployer(connie.address);
                 // check uri is the same for the new wallet token
                 let txResult = await mintResult.wait(1);
-                let _tokenId = txResult.events[0].args.id.toString();
+                let _tokenId = txResult.events[0].args._tokenId.toString();
                 expect(_tokenId).to.be.equal("1");
             });
 
@@ -111,17 +111,17 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
             it("Should be able to remove from employer (admin)", async function () {
                 await myContract
                     .connect(owner)
-                    .removeFromEmployer(alice.address, tokenId)
+                    .removeFromTeam(alice.address, tokenId)
 
                 let balance = await myContract.balanceOf(alice.address, tokenId);
                 expect(balance.toBigInt()).to.be.equal(0);
             });
 
             it("Should be able to remove from employer (employer member)", async function () {
-                await this.employerSft.setEmployerId(1);
+                await this.employerSft.setEmployerKey('hooli');
                 await myContract
                     .connect(alice)
-                    .removeFromMyEmployer(alice.address)
+                    .removeFromMyTeam(alice.address)
 
                 let balance = await myContract.balanceOf(alice.address, tokenId);
                 expect(balance.toBigInt()).to.be.equal(0);
@@ -132,7 +132,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
                 await expect(
                     myContract
                         .connect(bob)
-                        .removeFromEmployer(alice.address, tokenId)
+                        .removeFromTeam(alice.address, tokenId)
                 ).to.be.revertedWith("Ownable: caller is not the owner");
             });
         });

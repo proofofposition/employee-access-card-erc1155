@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
-import "popp-interfaces/IAccessCardSft.sol";
 import "popp-interfaces/IEmployerSft.sol";
 
 /**
@@ -25,7 +24,6 @@ contract PoppAccessCard is
 ERC1155Upgradeable,
 ERC1155URIStorageUpgradeable,
 OwnableUpgradeable,
-IAccessCardSft,
 UUPSUpgradeable
 {
     //////////////
@@ -38,10 +36,11 @@ UUPSUpgradeable
     ////////////////////
     uint256 private _tokenIdCounter;
     IEmployerSft private employerSft;
+    mapping(bytes32 => uint256) private _employerKeyToTokenId;
     /////////////
     // Events //
     ///////////
-    event NewAccessCardMinted(uint256 _tokenId, address _to, string _tokenURI);
+    event NewAccessCardMinted(uint256 _tokenId, address _to, string _tokenURI, string _employerKey);
     event UriSet(uint256 _tokenId, string _tokenURI);
     event BaseUriSet(string _baseUri);
     event WalletAddedToTeam(address _wallet, uint256 _tokenId);
@@ -55,6 +54,7 @@ UUPSUpgradeable
         __Ownable_init();
         __UUPSUpgradeable_init();
         employerSft = IEmployerSft(_employerSftAddress);
+        _tokenIdCounter = 0;
     }
 
     /**
@@ -62,11 +62,16 @@ UUPSUpgradeable
      *
      * @return uint256 representing the newly minted token id
      */
-    function mintNewAccessCard(address _to, string memory _tokenURI) external onlyOwner returns (uint256) {
+    function mintNewAccessCard(
+        address _to,
+        string memory _tokenURI,
+        string memory _employerKey
+    ) external onlyOwner returns (uint256) {
         uint256 _tokenId = _mintToken(_to);
         _setURI(_tokenId, _tokenURI);
-        emit NewAccessCardMinted(_tokenId, _to, _tokenURI);
+        emit NewAccessCardMinted(_tokenId, _to, _tokenURI, _employerKey);
 
+        _employerKeyToTokenId[keccak256(abi.encodePacked(_employerKey))] = _tokenId;
         return _tokenId;
     }
 
@@ -77,6 +82,8 @@ UUPSUpgradeable
      * @return uint256 representing the newly minted token id
      */
     function addEmployee(address _to, uint256 _tokenId) external onlyOwner returns (uint256) {
+        emit WalletAddedToTeam(_to, _tokenId);
+
         return _addToEmployer(_to, _tokenId);
     }
 
@@ -87,11 +94,14 @@ UUPSUpgradeable
      * @return uint256 representing the newly minted token id
      */
     function addToMyEmployer(address _to) external returns (uint256) {
-        uint256 _employerId = employerSft.employerIdFromWallet(msg.sender);
-        if (_employerId == 0) {
+        string memory _employerKey = employerSft.employerKeyFromWallet(msg.sender);
+        if (bytes(_employerKey).length == 0) {
             revert MissingEmployerBadge();
         }
-        return _addToEmployer(_to, _employerId);
+        uint256 _tokenId = _employerKeyToTokenId[keccak256(abi.encodePacked(_employerKey))];
+        emit WalletAddedToTeam(_to, _tokenId);
+
+        return _addToEmployer(_to, _tokenId);
     }
 
     /**
@@ -103,7 +113,6 @@ UUPSUpgradeable
      */
     function _addToEmployer(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
-        emit WalletAddedToTeam(_to, _tokenId);
 
         return _tokenId;
     }
@@ -125,19 +134,21 @@ UUPSUpgradeable
      * This can only be done by a employer member.
      * note: A wallet can remove itself from a employer
      */
-    function removeFromMyEmployer(address _from) external {
-        uint256 _employerId = employerSft.employerIdFromWallet(msg.sender);
-        require(_employerId != 0, "You need to register your employer");
-        emit WalletRemovedFromTeam(_from, _employerId);
+    function removeFromMyTeam(address _from) external {
+        string memory _employerKey = employerSft.employerKeyFromWallet(msg.sender);
+        uint256 _tokenId = _employerKeyToTokenId[keccak256(abi.encodePacked(_employerKey))];
 
-        super._burn(_from, _employerId, 1);
+        require(_tokenId != 0, "You need to register your employer");
+        emit WalletRemovedFromTeam(_from, _tokenId);
+
+        super._burn(_from, _tokenId, 1);
     }
 
     /**
      * @dev remove a wallet from a employer
      * This can only be done by an admin user
      */
-    function removeFromEmployer(
+    function removeFromTeam(
         address _from,
         uint256 _id
     ) public onlyOwner {
