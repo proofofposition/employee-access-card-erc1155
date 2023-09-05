@@ -36,7 +36,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
             // mint employer verification
             let mintResult = await myContract
                 .connect(owner)
-                .mintNewAccessCard(alice.address, "TOKEN_URI", 'hooli');
+                .mintNew(alice.address, "TOKEN_URI", 'hooli');
 
             let batch = await myContract.balanceOfBatch([alice.address], [1])
             expect(batch.toString()).to.equal('1');
@@ -56,7 +56,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
             await expect(
                 myContract
                     .connect(bob)
-                    .mintNewAccessCard(bob.address, "TOKEN_URI", 'hoooli')
+                    .mintNew(bob.address, "TOKEN_URI", 'hoooli')
             ).to.be.revertedWith("Ownable: caller is not the owner");
 
             // test non-transferable
@@ -65,11 +65,11 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
             ).to.be.revertedWithCustomError(myContract, 'NonTransferable');
         });
 
-        describe("addEmployee()", function () {
+        describe("addToTeam()", function () {
             it("Owner should add a wallet to a pre-existing access card", async function () {
                 // add to employer
                 await myContract
-                    .addEmployee(connie.address, 1);
+                    .addToTeam(connie.address, 1);
 
                 expect(await myContract.balanceOf(connie.address, 1)).to.equal(
                     1
@@ -81,18 +81,18 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
                 await expect(
                     myContract
                         .connect(bob)
-                        .addEmployee(connie.address, 1)
+                        .addToTeam(connie.address, 1)
                 ).to.be.revertedWith("Ownable: caller is not the owner");
             });
         });
 
-        describe("addToMyEmployer()", function () {
+        describe("addToMyTeam()", function () {
             it("Should be able to add a wallet to my employer", async function () {
                 await this.employerSft.setEmployerKey('hooli');
                 // add a new wallet
                 let mintResult = await myContract
                     .connect(alice)
-                    .addToMyEmployer(connie.address);
+                    .addToMyTeam(connie.address);
                 // check uri is the same for the new wallet token
                 let txResult = await mintResult.wait(1);
                 let _tokenId = txResult.events[0].args._tokenId.toString();
@@ -104,7 +104,7 @@ describe("🚩 Full Popp Employee Access Card Flow", function () {
                 await expect(
                     myContract
                         .connect(bob)
-                        .addToMyEmployer(connie.address)
+                        .addToMyTeam(connie.address)
                 ).to.be.revertedWithCustomError(myContract, 'MissingEmployerBadge');
             });
 

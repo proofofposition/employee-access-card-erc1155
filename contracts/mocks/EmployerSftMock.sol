@@ -14,7 +14,7 @@ IEmployerSft {
         employerKey = _employerKey;
     }
 
-    function employerKeyFromWallet(address _address) external view returns (string memory) {
+    function employerKeyFromWallet(address) external view returns (string memory) {
         return employerKey;
     }
 

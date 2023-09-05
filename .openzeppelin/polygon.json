@@ -2,15 +2,15 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0x3501E1D4270749b1396EdC866b831df80D3D4e24",
-      "txHash": "0x081b721912151af54ee6c06a948811074692e7920f5cb1fd294f6d1f1925d352",
+      "address": "0x35d87F21a2114B626f1bC6A133a8e28F16567e6D",
+      "txHash": "0x71f756ef65ba617b9df7399e7f564b4deb682c3d1be2c5df5c6cceff8223dfab",
       "kind": "uups"
     }
   ],
   "impls": {
-    "4934fe2bae723ce39d804a622d77bf05f4854742fed4e8254fc35693bbb7bd3b": {
-      "address": "0x6AD61192B4a732e4ce54A68c5c993370490EA042",
-      "txHash": "0x5035ec24fb393e060e7556c754f4fbde88599a67cd67b426d2fbe5921e5d9f75",
+    "5e85916abafde666f4f55fb73b72db206a3e7980adfa1481892582c9059681ca": {
+      "address": "0xf8D5D363C287F240ede5059C2c23F790eEC89Ab5",
+      "txHash": "0x3fc8cd0dc3d2e73f411304da84a8ffdb4b066e95852e2bc3acfb197b63d4eacb",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -139,17 +139,25 @@
             "label": "_tokenIdCounter",
             "offset": 0,
             "slot": "351",
-            "type": "t_struct(Counter)2722_storage",
+            "type": "t_uint256",
             "contract": "PoppAccessCard",
-            "src": "contracts/PoppAccessCard.sol:28"
+            "src": "contracts/PoppAccessCard.sol:35"
           },
           {
             "label": "employerSft",
             "offset": 0,
             "slot": "352",
-            "type": "t_contract(IEmployerSft)6318",
+            "type": "t_contract(IEmployerSft)4538",
             "contract": "PoppAccessCard",
-            "src": "contracts/PoppAccessCard.sol:29"
+            "src": "contracts/PoppAccessCard.sol:36"
+          },
+          {
+            "label": "_employerKeyToTokenId",
+            "offset": 0,
+            "slot": "353",
+            "type": "t_mapping(t_bytes32,t_uint256)",
+            "contract": "PoppAccessCard",
+            "src": "contracts/PoppAccessCard.sol:37"
           }
         ],
         "types": {
@@ -177,7 +185,11 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(IEmployerSft)6318": {
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IEmployerSft)4538": {
             "label": "contract IEmployerSft",
             "numberOfBytes": "20"
           },
@@ -193,6 +205,10 @@
             "label": "mapping(address => uint256)",
             "numberOfBytes": "32"
           },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
           "t_mapping(t_uint256,t_mapping(t_address,t_uint256))": {
             "label": "mapping(uint256 => mapping(address => uint256))",
             "numberOfBytes": "32"
@@ -203,18 +219,6 @@
           },
           "t_string_storage": {
             "label": "string",
-            "numberOfBytes": "32"
-          },
-          "t_struct(Counter)2722_storage": {
-            "label": "struct CountersUpgradeable.Counter",
-            "members": [
-              {
-                "label": "_value",
-                "type": "t_uint256",
-                "offset": 0,
-                "slot": "0"
-              }
-            ],
             "numberOfBytes": "32"
           },
           "t_uint256": {

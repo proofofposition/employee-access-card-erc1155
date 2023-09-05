@@ -37,7 +37,7 @@ module.exports = {
     },
     sepolia: {
       url: SEPOLIA_API_URL,
-      timeout: 100000000,
+      timeout: 1000000000,
       accounts: [
         PRIVATE_KEY
       ]

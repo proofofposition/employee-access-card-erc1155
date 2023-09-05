@@ -3,10 +3,8 @@ pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
 import "popp-interfaces/IEmployerSft.sol";
 
 /**
@@ -62,7 +60,7 @@ UUPSUpgradeable
      *
      * @return uint256 representing the newly minted token id
      */
-    function mintNewAccessCard(
+    function mintNew(
         address _to,
         string memory _tokenURI,
         string memory _employerKey
@@ -81,10 +79,10 @@ UUPSUpgradeable
      *
      * @return uint256 representing the newly minted token id
      */
-    function addEmployee(address _to, uint256 _tokenId) external onlyOwner returns (uint256) {
+    function addToTeam(address _to, uint256 _tokenId) external onlyOwner returns (uint256) {
         emit WalletAddedToTeam(_to, _tokenId);
 
-        return _addToEmployer(_to, _tokenId);
+        return _addToTeam(_to, _tokenId);
     }
 
     /**
@@ -93,7 +91,7 @@ UUPSUpgradeable
      *
      * @return uint256 representing the newly minted token id
      */
-    function addToMyEmployer(address _to) external returns (uint256) {
+    function addToMyTeam(address _to) external returns (uint256) {
         string memory _employerKey = employerSft.employerKeyFromWallet(msg.sender);
         if (bytes(_employerKey).length == 0) {
             revert MissingEmployerBadge();
@@ -101,17 +99,17 @@ UUPSUpgradeable
         uint256 _tokenId = _employerKeyToTokenId[keccak256(abi.encodePacked(_employerKey))];
         emit WalletAddedToTeam(_to, _tokenId);
 
-        return _addToEmployer(_to, _tokenId);
+        return _addToTeam(_to, _tokenId);
     }
 
     /**
     * @dev Mint a new token and add to a employer
-     * this is an internal function that is called by `mintNewAccessCard` and `addToEmployer`
+     * this is an internal function that is called by `mintNew` and `addToEmployer`
      * 1. Mint the token
      * 2. Set the token to the wallet
      * @return uint256 representing the newly minted token id
      */
-    function _addToEmployer(address _to, uint256 _tokenId) internal returns (uint256) {
+    function _addToTeam(address _to, uint256 _tokenId) internal returns (uint256) {
         _mint(_to, _tokenId, 1, "");
 
         return _tokenId;
@@ -119,14 +117,14 @@ UUPSUpgradeable
 
     /**
      * @dev Mint a new SFT. This is an internal function that is called by
-     * `mintNewAccessCard` and `addToEmployer`.
+     * `mintNew` and `addToEmployer`.
      * 1. Mint the token
      * 2. Set the token to the wallet
      * @return uint256 representing the newly minted token id
      */
     function _mintToken(address _to) internal returns (uint256) {
         _tokenIdCounter++;
-        return _addToEmployer(_to, _tokenIdCounter);
+        return _addToTeam(_to, _tokenIdCounter);
     }
 
     /**
